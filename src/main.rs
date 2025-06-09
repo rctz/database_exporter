@@ -31,7 +31,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let rows = sqlx::query(&query).fetch_all(&pool).await?;
 
     // Open CSV writer
-    let mut wtr = Writer::from_path(format!("{}_{}.csv", csv_output, now.format("%Y-%m-%d_%H:%M:%S")))?;
+    let mut wtr = Writer::from_path(format!("{}_{}.csv", csv_output, now.format("%Y-%m-%d_%H-%M-%S")))?;
 
     if let Some(row) = rows.get(0) {
         // Write CSV headers
