@@ -12,9 +12,6 @@ use std::io::stdin;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-
-    
-    
     // Load environment variables from `.env`
     dotenv().ok();
 
