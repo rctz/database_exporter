@@ -7,18 +7,22 @@ use csv::Writer;
 use std::error::Error;
 use sqlx::TypeInfo;
 use chrono;
+use std::io::{self, Write};
+use std::io::stdin;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
 
-    let now = chrono::Local::now();
+    
     
     // Load environment variables from `.env`
     dotenv().ok();
 
     let db_url = env::var("DATABASE_URL")?;
-    let table_name = env::var("TABLE_NAME")?;
+    let table_name_list_str = env::var("TABLE_NAME")?;
     let csv_output = env::var("CSV_OUTPUT")?;
+
+    let table_name_list: Vec<&str> = table_name_list_str.split(',').map(|s| s.trim()).collect();
 
     // Create MySQL connection pool
     let pool = MySqlPoolOptions::new()
@@ -27,11 +31,32 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .await?;
 
     // Fetch all rows
+    for each_table in table_name_list{
+        export_table(&pool, &each_table, &csv_output).await?;
+    }
+
+    println!("Press Enter to exit...");
+    let _ = io::stdout().flush();
+    let mut input = String::new();
+    let _ = stdin().read_line(&mut input);
+
+    Ok(())
+}
+
+async fn export_table(pool: &sqlx::MySqlPool, table_name: &str, csv_output: &str) -> Result<(), Box<dyn Error>> {
     let query = format!("SELECT * FROM {}", table_name);
-    let rows = sqlx::query(&query).fetch_all(&pool).await?;
+    let rows = sqlx::query(&query).fetch_all(pool).await?;
+
+    let now = chrono::Local::now();
+
+    let mut file_format = format!("{}_{}_{}.csv", csv_output, table_name, now.format("%Y-%m-%d_%H-%M-%S"));
+
+    if csv_output == "" {
+        file_format = format!("{}_{}.csv", table_name, now.format("%Y-%m-%d_%H-%M-%S"));
+    }
 
     // Open CSV writer
-    let mut wtr = Writer::from_path(format!("{}_{}.csv", csv_output, now.format("%Y-%m-%d_%H-%M-%S")))?;
+    let mut wtr = Writer::from_path(file_format)?;
 
     if let Some(row) = rows.get(0) {
         // Write CSV headers
@@ -73,7 +98,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         wtr.write_record(&record)?;
     }
     wtr.flush()?;
-    println!("✅ Data exported to CSV successfully.");
+    println!("✅ Table: {} was exported successfully.", table_name);
+
 
     Ok(())
 }
