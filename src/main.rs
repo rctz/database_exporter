@@ -9,11 +9,19 @@ use sqlx::TypeInfo;
 use chrono;
 use std::io::{self, Write};
 use std::io::stdin;
+use std::path::Path;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    // Load environment variables from `.env`
-    dotenv().ok();
+    let mut currect_dir = env::current_exe()
+        .expect("Could not get currect ")
+        .parent()
+        .expect("Failed to get parent directory")
+        .to_path_buf();
+    currect_dir.push(".env");
+
+    let env_path = Path::new(&currect_dir);
+    dotenvy::from_path(env_path).ok();
 
     let db_url = env::var("DATABASE_URL")?;
     let table_name_list_str = env::var("TABLE_NAME")?;
