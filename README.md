@@ -10,6 +10,8 @@ A blazing-fast, asynchronous Rust command-line tool to export MySQL tables to CS
 - **Full table export** to CSV with column headers preserved
 - **Automatic data-type handling** (integers, floats, booleans, text, dates & timestamps)
 - **Timestamped output files** for easy versioning
+- **Multi-table export** – supply a comma-separated list and get a CSV per table
+- **Customizable file naming & output directory** – tweak `CSV_OUTPUT_PREFIX` & `OUTPUT_PATH`
 - **Pre-compiled Windows binary** (`db_deleter.exe`) included for quick start
 - Small binary size & minimal runtime dependencies
 
@@ -24,7 +26,7 @@ A blazing-fast, asynchronous Rust command-line tool to export MySQL tables to CS
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/db_exporter.git
+   git clone https://github.com/rctz/db_exporter.git
    cd db_exporter
    ```
 
@@ -45,17 +47,27 @@ The binary will be available at `target/release/db_exporter`.
    cp .env.example .env
    ```
 
-2. Edit the `.env` file with your database connection details:
+2. Edit the `.env` file with your database connection & export settings:
 
    ```env
-   # MySQL connection string
-   DATABASE_URL=mysql://username:password@localhost:3306/your_database
+   # Database driver (currently supports only MySQL)
+   DATABASE_TYPE=mysql
 
-   # Table to export
-   TABLE_NAME=your_table_name
+   # Connection details
+   DATABASE_URL=localhost       # host or IP
+   DATABASE_PORT=3306           # port
+   DATABASE_NAME=my_database    # schema / database name
+   DATABASE_USER=my_user        # username
+   DATABASE_PW=secret           # password
 
-   # Base name for the output CSV (timestamp will be appended automatically)
-   CSV_OUTPUT=output
+   # Comma-separated list of tables to export
+   TABLE_NAME=robots,stations
+
+   # Customize CSV filenames
+   CSV_OUTPUT_PREFIX=export
+
+   # Directory where the timestamped folder will be created (leave blank for CWD)
+   OUTPUT_PATH=
    ```
 
 ## Usage
@@ -78,6 +90,7 @@ The tool will create a CSV file with the specified base name and a timestamp, e.
 - Boolean values (BOOL, BOOLEAN)
 - Text (TEXT, VARCHAR, CHAR, LONGTEXT)
 - Date/Time (DATETIME, TIMESTAMP)
+- JSON (JSON)
 
 ## Error Handling
 
