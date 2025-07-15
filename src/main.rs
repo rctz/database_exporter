@@ -61,10 +61,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
         export_table(&pool, &each_table, &output_path, &csv_output_prefix).await?;
     }
 
-    println!("Press Enter to exit...");
-    let _ = io::stdout().flush();
-    let mut input = String::new();
-    let _ = stdin().read_line(&mut input);
+    // println!("Press Enter to exit...");
+    // let _ = io::stdout().flush();
+    // let mut input = String::new();
+    // let _ = stdin().read_line(&mut input);
 
     Ok(())
 }
