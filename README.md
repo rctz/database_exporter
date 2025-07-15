@@ -83,9 +83,9 @@ The tool will create a CSV file with the specified base name and a timestamp, e.
 
 - The tool will exit with an error if:
   - The database connection fails
-  - The specified table doesn't exist
+  - Any of the specified tables don't exist
   - There are permission issues
-  - The output file cannot be created
+  - The output files cannot be created
 
 ## License
 
