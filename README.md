@@ -1,14 +1,17 @@
 # Database Exporter
 
-A simple Rust command-line tool to export database tables to CSV files with automatic timestamping.
+A blazing-fast, asynchronous Rust command-line tool to export MySQL tables to CSV files with automatic timestamping.
 
 ## Features
 
-- Connects to MySQL databases
-- Exports entire tables to CSV format
-- Automatically handles various data types (integers, floats, booleans, text, dates)
-- Timestamps output files for easy versioning
-- Lightweight and fast
+- **Asynchronous & non-blocking** – built with Tokio for maximum throughput
+- **Connection pooling** via SQLx for efficient resource usage
+- **Zero-config setup** – just drop a `.env` file with your settings (see below)
+- **Full table export** to CSV with column headers preserved
+- **Automatic data-type handling** (integers, floats, booleans, text, dates & timestamps)
+- **Timestamped output files** for easy versioning
+- **Pre-compiled Windows binary** (`db_deleter.exe`) included for quick start
+- Small binary size & minimal runtime dependencies
 
 ## Prerequisites
 
@@ -30,9 +33,11 @@ A simple Rust command-line tool to export database tables to CSV files with auto
    cargo build --release
    ```
 
-The binary will be available at `target/release/db_exporter`
+The binary will be available at `target/release/db_exporter`.
 
-## Configuration
+**Windows users:** A pre-built binary (`db_deleter.exe`) is included in the repository root – no Rust toolchain required. Simply double-click or run it from PowerShell.
+
+## Configuration (.env)
 
 1. Copy the example environment file:
 
@@ -42,27 +47,29 @@ The binary will be available at `target/release/db_exporter`
 
 2. Edit the `.env` file with your database connection details:
 
-   ```
+   ```env
+   # MySQL connection string
    DATABASE_URL=mysql://username:password@localhost:3306/your_database
+
+   # Table to export
    TABLE_NAME=your_table_name
+
+   # Base name for the output CSV (timestamp will be appended automatically)
    CSV_OUTPUT=output
    ```
-
-   - `DATABASE_URL`: MySQL connection string in the format `mysql://username:password@host:port/database`
-   - `TABLE_NAME`: Name of the table to export
-   - `CSV_OUTPUT`: Base name for the output file (will be appended with timestamp)
 
 ## Usage
 
 ```bash
-# Run the exporter
+# Run with Cargo (requires Rust toolchain)
 cargo run --release
 
-# Or run the built binary directly
-./target/release/db_exporter
+# Or execute the compiled binary directly
+./target/release/db_exporter             # Linux / macOS
+.\db_deleter.exe                         # Windows (pre-built)
 ```
 
-The tool will create a CSV file with the specified base name and a timestamp (e.g., `output_2023-01-01_12:00:00.csv`).
+The tool will create a CSV file with the specified base name and a timestamp, e.g. `output_2025-07-15_15-23-05.csv`.
 
 ## Supported Data Types
 
