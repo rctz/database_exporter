@@ -10,6 +10,7 @@ use chrono;
 use std::io::{self, Write};
 use std::io::stdin;
 use std::path::Path;
+use serde_json::Value;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -18,26 +19,42 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .parent()
         .expect("Failed to get parent directory")
         .to_path_buf();
+
     currect_dir.push(".env");
 
     let env_path = Path::new(&currect_dir);
     dotenvy::from_path(env_path).ok();
 
-    let db_url = env::var("DATABASE_URL")?;
-    let table_name_list_str = env::var("TABLE_NAME")?;
-    let csv_output = env::var("CSV_OUTPUT")?;
+   // Better error handling for environment variables
+   let database_url = env::var("DATABASE_URL")
+   .map_err(|_| "Missing environment variable: DATABASE_URL")?;
+let database_type = env::var("DATABASE_TYPE")
+   .map_err(|_| "Missing environment variable: DATABASE_TYPE")?;
+let database_name = env::var("DATABASE_NAME")
+   .map_err(|_| "Missing environment variable: DATABASE_NAME")?;
+let database_port = env::var("DATABASE_PORT")
+   .map_err(|_| "Missing environment variable: DATABASE_PORT")?;
+let database_user = env::var("DATABASE_USER")
+   .map_err(|_| "Missing environment variable: DATABASE_USER")?;
+let database_password = env::var("DATABASE_PW")
+   .map_err(|_| "Missing environment variable: DATABASE_PW")?;
+let table_name_list_str = env::var("TABLE_NAME")
+   .map_err(|_| "Missing environment variable: TABLE_NAME")?;
+let csv_output_prefix = env::var("CSV_OUTPUT_PREFIX")
+   .map_err(|_| "Missing environment variable: CSV_OUTPUT_PREFIX")?;
 
+    let full_database_url = format!("{}://{}:{}@{}:{}/{}", database_type, database_user, database_password, database_url, database_port, database_name);
     let table_name_list: Vec<&str> = table_name_list_str.split(',').map(|s| s.trim()).collect();
 
     // Create MySQL connection pool
     let pool = MySqlPoolOptions::new()
         .max_connections(5)
-        .connect(&db_url)
+        .connect(&full_database_url)
         .await?;
 
     // Fetch all rows
     for each_table in table_name_list{
-        export_table(&pool, &each_table, &csv_output).await?;
+        export_table(&pool, &each_table, &csv_output_prefix).await?;
     }
 
     println!("Press Enter to exit...");
@@ -86,8 +103,12 @@ async fn export_table(pool: &sqlx::MySqlPool, table_name: &str, csv_output: &str
                 "bool" | "boolean" => {
                     row.try_get::<bool, _>(col.name()).map(|v| v.to_string())
                 }
-                "text" | "varchar" | "char" | "longtext" => {
+                "text" | "varchar" | "char" | "longtext"=> {
                     row.try_get::<String, _>(col.name())
+                }
+                "json" => {
+                    // Decode MySQL JSON type as serde_json::Value then stringify
+                    row.try_get::<Value, _>(col.name()).map(|v| v.to_string())
                 }
                 "datetime" | "timestamp" => {
                     row.try_get::<chrono::NaiveDateTime, _>(col.name())
