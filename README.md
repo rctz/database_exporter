@@ -1,15 +1,19 @@
 # Database Exporter
 
-A simple Rust command-line tool to export database tables to CSV files with automatic timestamping.
+A blazing-fast, asynchronous Rust command-line tool to export MySQL tables to CSV files with automatic timestamping.
 
 ## Features
 
-- Connects to MySQL databases
-- Exports single or multiple tables to CSV format in one run
-- Automatically handles various data types (integers, floats, booleans, text, dates)
-- Timestamps output files for easy versioning
-- Lightweight and fast
-- Supports multiple table exports with a single command
+- **Asynchronous & non-blocking** – built with Tokio for maximum throughput
+- **Connection pooling** via SQLx for efficient resource usage
+- **Zero-config setup** – just drop a `.env` file with your settings (see below)
+- **Full table export** to CSV with column headers preserved
+- **Automatic data-type handling** (integers, floats, booleans, text, dates & timestamps)
+- **Timestamped output files** for easy versioning
+- **Multi-table export** – supply a comma-separated list and get a CSV per table
+- **Customizable file naming & output directory** – tweak `CSV_OUTPUT_PREFIX` & `OUTPUT_PATH`
+- **Pre-compiled Windows binary** (`db_deleter.exe`) included for quick start
+- Small binary size & minimal runtime dependencies
 
 ## Prerequisites
 
@@ -22,7 +26,7 @@ A simple Rust command-line tool to export database tables to CSV files with auto
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/db_exporter.git
+   git clone https://github.com/rctz/db_exporter.git
    cd db_exporter
    ```
 
@@ -31,9 +35,11 @@ A simple Rust command-line tool to export database tables to CSV files with auto
    cargo build --release
    ```
 
-The binary will be available at `target/release/db_exporter`
+The binary will be available at `target/release/db_exporter`.
 
-## Configuration
+**Windows users:** A pre-built binary (`db_deleter.exe`) is included in the repository root – no Rust toolchain required. Simply double-click or run it from PowerShell.
+
+## Configuration (.env)
 
 1. Copy the example environment file:
 
@@ -41,39 +47,41 @@ The binary will be available at `target/release/db_exporter`
    cp .env.example .env
    ```
 
-2. Edit the `.env` file with your database connection details:
+2. Edit the `.env` file with your database connection & export settings:
 
-   ```
-   DATABASE_URL=mysql://username:password@localhost:3306/your_database
-   TABLE_NAME=table1,table2,table3
-   CSV_OUTPUT=output
-   ```
+   ```env
+   # Database driver (currently supports only MySQL)
+   DATABASE_TYPE=mysql
 
-   - `DATABASE_URL`: MySQL connection string in the format `mysql://username:password@host:port/database`
-   - `TABLE_NAME`: Comma-separated list of table names to export (e.g., `users,products,orders`)
-   - `CSV_OUTPUT`: Base name for the output files (will be appended with table name and timestamp)
+   # Connection details
+   DATABASE_URL=localhost       # host or IP
+   DATABASE_PORT=3306           # port
+   DATABASE_NAME=my_database    # schema / database name
+   DATABASE_USER=my_user        # username
+   DATABASE_PW=secret           # password
+
+   # Comma-separated list of tables to export
+   TABLE_NAME=robots,stations
+
+   # Customize CSV filenames
+   CSV_OUTPUT_PREFIX=export
+
+   # Directory where the timestamped folder will be created (leave blank for CWD)
+   OUTPUT_PATH=
+   ```
 
 ## Usage
 
 ```bash
-# Run the exporter
+# Run with Cargo (requires Rust toolchain)
 cargo run --release
 
-# Or run the built binary directly
-./target/release/db_exporter
+# Or execute the compiled binary directly
+./target/release/db_exporter             # Linux / macOS
+.\db_deleter.exe                         # Windows (pre-built)
 ```
 
-The tool will create CSV files with the specified base name, table name, and a timestamp (e.g., `output_table1_2023-01-01_12-00-00.csv`).
-
-### Multiple Table Export
-
-To export multiple tables in a single run, simply list them in the `TABLE_NAME` environment variable, separated by commas:
-
-```
-TABLE_NAME=customers,orders,products
-```
-
-This will create separate CSV files for each table with their respective names in the output files.
+The tool will create a CSV file with the specified base name and a timestamp, e.g. `output_2025-07-15_15-23-05.csv`.
 
 ## Supported Data Types
 
@@ -82,6 +90,7 @@ This will create separate CSV files for each table with their respective names i
 - Boolean values (BOOL, BOOLEAN)
 - Text (TEXT, VARCHAR, CHAR, LONGTEXT)
 - Date/Time (DATETIME, TIMESTAMP)
+- JSON (JSON)
 
 ## Error Handling
 
