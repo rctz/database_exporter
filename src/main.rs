@@ -144,6 +144,9 @@ async fn export_table(
         wtr.write_record(&record)?;
     }
     wtr.flush()?;
+
+    let query_delete = format!("DELETE FROM {}", table_name);
+    sqlx::query(&query_delete).fetch_all(pool).await?;
     println!("✅ Table: {} was exported successfully.", table_name);
 
     Ok(())
