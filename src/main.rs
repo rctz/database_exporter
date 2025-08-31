@@ -20,6 +20,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .to_path_buf();
 
     currect_dir.push(".env");
+    currect_dir.push(".env");
+    currect_dir.push(".env");
 
     let env_path = Path::new(&currect_dir);
     dotenvy::from_path(env_path).ok();
