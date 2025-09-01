@@ -61,6 +61,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .map_err(|_| "Missing environment variable: CSV_OUTPUT_PREFIX")?;
     let output_path =
         env::var("OUTPUT_PATH").map_err(|_| "Missing environment variable: OUTPUT_PATH")?;
+        let csv_output_prefix = env::var("CSV_OUTPUT_PREFIX")
+        .map_err(|_| "Missing environment variable: CSV_OUTPUT_PREFIX")?;
+    let table_name_list_str =
+        env::var("TABLE_NAME").map_err(|_| "Missing environment variable: TABLE_NAME")?;
+    let csv_output_prefix = env::var("CSV_OUTPUT_PREFIX")
+        .map_err(|_| "Missing environment variable: CSV_OUTPUT_PREFIX")?;
+    let output_path =
 
     let full_database_url = format!(
         "{}://{}:{}@{}:{}/{}",
