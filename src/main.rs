@@ -20,6 +20,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .to_path_buf();
 
     currect_dir.push(".env");
+    currect_dir.push(".env");
+    currect_dir.push(".env");
 
     let env_path = Path::new(&currect_dir);
     dotenvy::from_path(env_path).ok();
@@ -41,8 +43,31 @@ async fn main() -> Result<(), Box<dyn Error>> {
         env::var("TABLE_NAME").map_err(|_| "Missing environment variable: TABLE_NAME")?;
     let csv_output_prefix = env::var("CSV_OUTPUT_PREFIX")
         .map_err(|_| "Missing environment variable: CSV_OUTPUT_PREFIX")?;
+    let table_name_list_str =
+        env::var("TABLE_NAME").map_err(|_| "Missing environment variable: TABLE_NAME")?;
+    let csv_output_prefix = env::var("CSV_OUTPUT_PREFIX")
+        .map_err(|_| "Missing environment variable: CSV_OUTPUT_PREFIX")?;
+    let table_name_list_str =
+        env::var("TABLE_NAME").map_err(|_| "Missing environment variable: TABLE_NAME")?;
+    let csv_output_prefix = env::var("CSV_OUTPUT_PREFIX")
+        .map_err(|_| "Missing environment variable: CSV_OUTPUT_PREFIX")?;
+    let table_name_list_str =
+        env::var("TABLE_NAME").map_err(|_| "Missing environment variable: TABLE_NAME")?;
+    let csv_output_prefix = env::var("CSV_OUTPUT_PREFIX")
+        .map_err(|_| "Missing environment variable: CSV_OUTPUT_PREFIX")?;
+    let table_name_list_str =
+        env::var("TABLE_NAME").map_err(|_| "Missing environment variable: TABLE_NAME")?;
+    let csv_output_prefix = env::var("CSV_OUTPUT_PREFIX")
+        .map_err(|_| "Missing environment variable: CSV_OUTPUT_PREFIX")?;
     let output_path =
         env::var("OUTPUT_PATH").map_err(|_| "Missing environment variable: OUTPUT_PATH")?;
+        let csv_output_prefix = env::var("CSV_OUTPUT_PREFIX")
+        .map_err(|_| "Missing environment variable: CSV_OUTPUT_PREFIX")?;
+    let table_name_list_str =
+        env::var("TABLE_NAME").map_err(|_| "Missing environment variable: TABLE_NAME")?;
+    let csv_output_prefix = env::var("CSV_OUTPUT_PREFIX")
+        .map_err(|_| "Missing environment variable: CSV_OUTPUT_PREFIX")?;
+    let output_path =
 
     let full_database_url = format!(
         "{}://{}:{}@{}:{}/{}",
@@ -96,6 +121,8 @@ async fn export_table(
 
     let now = chrono::Local::now();
     let folder_name = format!("{}", now.format("%Y-%m-%d_%H-%M-%S"));
+
+    consy folder_name = format!("{}", now.format("%Y-%m-%d_%H-%M-%S"));
 
     // Get the full path where CSV should be written
     let csv_directory = create_output_path(&output_path, &folder_name)?;
