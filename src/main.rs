@@ -122,6 +122,8 @@ async fn export_table(
     let now = chrono::Local::now();
     let folder_name = format!("{}", now.format("%Y-%m-%d_%H-%M-%S"));
 
+    consy folder_name = format!("{}", now.format("%Y-%m-%d_%H-%M-%S"));
+
     // Get the full path where CSV should be written
     let csv_directory = create_output_path(&output_path, &folder_name)?;
 
